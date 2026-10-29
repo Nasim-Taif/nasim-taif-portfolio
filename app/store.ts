@@ -2,9 +2,13 @@ import { env } from "cloudflare:workers";
 import { defaultContent, type Content } from "./content";
 import { getChatGPTUser } from "./chatgpt-auth";
 export function database(){if(!env.DB)throw new Error("Content storage is unavailable.");return env.DB;}
+function upgradeContent(content:Content):Content {
+ if(content.process.map(s=>s.title).join("|")==="Understand|Explore|Design|Refine") return {...content,process:defaultContent.process};
+ return content;
+}
 export async function loadState(){
   const row=await database().prepare("SELECT * FROM portfolio_content WHERE id = ?").bind("main").first<{published:string;draft:string|null;revision:number;updated_at:string}>();
-  return {published:row?JSON.parse(row.published) as Content:defaultContent,draft:row?.draft?JSON.parse(row.draft) as Content:null,revision:row?.revision??0,updatedAt:row?.updated_at??null};
+  return {published:row?upgradeContent(JSON.parse(row.published) as Content):defaultContent,draft:row?.draft?upgradeContent(JSON.parse(row.draft) as Content):null,revision:row?.revision??0,updatedAt:row?.updated_at??null};
 }
 export async function publishedContent(){return (await loadState()).published;}
 export async function ownerIdentity(){
