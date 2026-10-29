@@ -19,7 +19,7 @@ export const contentSchema = z.object({
     aboutTitle: short, about: z.string().min(1).max(2500),
     availability: short, available: z.boolean(), portrait:image,
     email:z.string().email().max(254), phone:z.string().regex(/^\+?[\d ()-]{7,25}$/),
-    education:short, institution:short, certification:short,
+    education:short, institution:short, certification:short, additionalCertifications:z.string().max(2000).default("Complete Product Design Bootcamp — ZTM"),
     contactTitle:short, contactDescription:z.string().max(600),
   }),
   projects:z.array(projectSchema).max(40).refine(p=>new Set(p.map(x=>x.id)).size===p.length,"Project slugs must be unique."),
@@ -37,7 +37,7 @@ export const defaultContent:Content = {
     aboutTitle:"A designer’s curiosity. An engineer’s mindset.",
     about:"I’m a professional UI/UX designer and a BSc in Computer Science & Engineering graduate from North South University. My technical foundation helps me connect thoughtful design with how digital products actually work.\n\nFrom understanding people’s needs to refining the smallest interaction, I care about making websites and apps feel clear, useful, and considered.",
     availability:"Available for freelance & full-time",available:true,portrait:"/images/nasim.jpg",
-    email:"mdnasimtaif@gmail.com",phone:"+8801410008914",education:"BSc in Computer Science & Engineering",institution:"North South University",certification:"Google-certified UX Designer",
+    email:"mdnasimtaif@gmail.com",phone:"+8801410008914",education:"BSc in Computer Science & Engineering",institution:"North South University",certification:"Google-certified UX Designer",additionalCertifications:"Complete Product Design Bootcamp — ZTM",
     contactTitle:"Have something in mind?",contactDescription:"Let’s turn your idea into an experience people love to use. Reach out for a project, a collaboration, or just a conversation.",
   },
   projects:[

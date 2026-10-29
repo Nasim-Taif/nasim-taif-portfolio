@@ -1,0 +1,1 @@
+import {publishedContent} from '../store';import ProfilePage from '../profile-page';export const dynamic='force-dynamic';export const metadata={title:'contact — Nasim Taif'};export default async function Page(){return <ProfilePage kind='contact' content={await publishedContent()}/>}
