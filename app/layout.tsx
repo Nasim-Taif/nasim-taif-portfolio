@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import "./motion.css";
 import "./blue-motion.css";
+import "./studio.css";
 import PageTransitions from "./page-transitions";
 
 export const metadata: Metadata = {
