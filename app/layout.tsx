@@ -3,6 +3,7 @@ import "./globals.css";
 import "./motion.css";
 import "./blue-motion.css";
 import "./studio.css";
+import "./design-process.css";
 import PageTransitions from "./page-transitions";
 
 export const metadata: Metadata = {
