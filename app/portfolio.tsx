@@ -1,17 +1,16 @@
 "use client";
 import {useEffect,useState,useRef} from "react";
-import {ArrowUpRight,ArrowDown,ArrowRight,Menu,X,Check,Copy,Globe} from "lucide-react";
+import {ArrowUpRight,Menu,X,Check,Copy} from "lucide-react";
 import DesignProcess from "./design-process";
 import CertificationLink from "./certification-link";
 import type {Content} from "./content";
-export function Brand({name="Nasim Taif",title="UI/UX Designer"}:{name?:string;title?:string}){return <a className="brand" href="/" aria-label={`${name} home`}><span className="name-logo"><span className="logo-name">MD. NASIM TAIF<span className="logo-star" aria-hidden="true">✳</span></span><small>UI/UX DESIGNER</small></span></a>;}
-export function Header({content}:{content:Content}){const [open,setOpen]=useState(false);return <header className="site-header"><div className="container nav-inner"><Brand name={content.profile.shortName} title={content.profile.title}/><nav aria-label="Main navigation" className={open?"nav-links is-open":"nav-links"}><a href="/work" onClick={()=>setOpen(false)}>Work</a><a href="/about" onClick={()=>setOpen(false)}>About</a><a href="/#process" onClick={()=>setOpen(false)}>Approach</a><a className="nav-contact" href="/contact" onClick={()=>setOpen(false)}>Let’s talk <ArrowUpRight size={16}/></a></nav><button className="menu-toggle icon-btn" onClick={()=>setOpen(!open)} aria-label={open?"Close navigation":"Open navigation"} aria-expanded={open}>{open?<X/>:<Menu/>}</button></div></header>;}
-export function Footer({content}:{content:Content}){return <footer className="site-footer container"><div><Brand name={content.profile.shortName} title={content.profile.title}/><p>Thoughtfully designed. Made to connect.</p></div><div className="footer-right"><a href="/admin">Portfolio editor <ArrowUpRight size={13}/></a><span>© {new Date().getFullYear()} {content.profile.name}</span><a href="#top">Back to top ↑</a></div></footer>;}
+export function Brand({name="Nasim Taif"}:{name?:string}){return <a className="brand" href="/" aria-label={`${name} home`}><span className="name-logo"><span className="logo-name">MD. NASIM TAIF<span className="logo-star" aria-hidden="true">✳</span></span><small>UI/UX DESIGNER</small></span></a>;}
+export function Header({content}:{content:Content}){const [open,setOpen]=useState(false);return <header className="site-header"><div className="container nav-inner"><Brand name={content.profile.shortName}/><nav aria-label="Main navigation" className={open?"nav-links is-open":"nav-links"}><a href="/work" onClick={()=>setOpen(false)}>Work</a><a href="/about" onClick={()=>setOpen(false)}>About</a><a href="/#process" onClick={()=>setOpen(false)}>Approach</a><a className="nav-contact" href="/contact" onClick={()=>setOpen(false)}>Let’s talk <ArrowUpRight size={16}/></a></nav><button className="menu-toggle icon-btn" onClick={()=>setOpen(!open)} aria-label={open?"Close navigation":"Open navigation"} aria-expanded={open}>{open?<X/>:<Menu/>}</button></div></header>;}
+export function Footer({content}:{content:Content}){return <footer className="site-footer container"><div><Brand name={content.profile.shortName}/><p>Thoughtfully designed. Made to connect.</p></div><div className="footer-right"><a href="/admin">Portfolio editor <ArrowUpRight size={13}/></a><span>© {new Date().getFullYear()} {content.profile.name}</span><a href="#top">Back to top ↑</a></div></footer>;}
 export default function Portfolio({content,preview=false}:{content:Content;preview?:boolean}){
  const p=content.profile;
  const hero=useRef<HTMLElement>(null);
- const [motionPaused,setMotionPaused]=useState(false);
- useEffect(()=>{setMotionPaused(document.documentElement.dataset.motionPaused==="true")},[]);
+ const [motionPaused,setMotionPaused]=useState(()=>typeof document!=="undefined"&&document.documentElement.dataset.motionPaused==="true");
  function toggleMotion(){const next=!motionPaused;setMotionPaused(next);document.documentElement.dataset.motionPaused=String(next);try{sessionStorage.setItem("portfolio-motion-paused",String(next))}catch{}resetHero()}
  function resetHero(){hero.current?.style.setProperty("--hero-x","0");hero.current?.style.setProperty("--hero-y","0")}
  function movePreview(e:React.PointerEvent<HTMLAnchorElement>){

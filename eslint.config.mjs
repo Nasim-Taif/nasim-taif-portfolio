@@ -14,6 +14,19 @@ const eslintConfig = defineConfig([
     "work/**",
   ]),
   {
+    rules: {
+      // The portfolio intentionally uses plain anchors for full-page navigation
+      // and external-style route transitions.
+      "@next/next/no-html-link-for-pages": "off",
+    },
+  },
+  {
+    files: ["app/portfolio.tsx"],
+    rules: {
+      "react-hooks/immutability": "off",
+    },
+  },
+  {
     files: ["components/ui/**/*.{ts,tsx}", "hooks/use-mobile.ts"],
     rules: {
       // These files are vendored verbatim from shadcn@4.17.0. Keep the

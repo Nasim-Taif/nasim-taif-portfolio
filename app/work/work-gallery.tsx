@@ -1,11 +1,11 @@
 'use client';
-import {useEffect,useState} from 'react';
+import {useState} from 'react';
 import {ArrowUpRight,LayoutGrid,List} from 'lucide-react';
 import type {Content} from '../content';
 import {Header,Footer} from '../portfolio';
 import AdditionalWork,{developmentCount,researchCount} from './additional-work';
 export default function WorkGallery({content}:{content:Content}){
- const [view,setView]=useState<'list'|'grid'>('list');
+ const [view,setView]=useState<'list'|'grid'>(()=>{try{const saved=localStorage.getItem('portfolio-work-view');return saved==='grid'||saved==='list'?saved:'list'}catch{return 'list'}});
  const [category,setCategory]=useState('All Work');
  const projects=content.projects.filter(p=>p.published);
  const showDesign=category==='All Work'||category==='UI/UX Design';
@@ -13,7 +13,6 @@ export default function WorkGallery({content}:{content:Content}){
  const tabs=[{label:'All Work',count:projects.length+developmentCount+researchCount},{label:'UI/UX Design',count:projects.length},{label:'Development',count:developmentCount},{label:'Research Papers',count:researchCount}];
  const activeTab=tabs.findIndex(t=>t.label===category);
  function tabKey(e:React.KeyboardEvent<HTMLButtonElement>,index:number){let next=index;if(e.key==='ArrowRight')next=(index+1)%tabs.length;else if(e.key==='ArrowLeft')next=(index+tabs.length-1)%tabs.length;else if(e.key==='Home')next=0;else if(e.key==='End')next=tabs.length-1;else return;e.preventDefault();setCategory(tabs[next].label);document.getElementById(`work-tab-${next}`)?.focus()}
- useEffect(()=>{try{const saved=localStorage.getItem('portfolio-work-view');if(saved==='grid'||saved==='list')setView(saved)}catch{}},[]);
  function changeView(value:'list'|'grid'){setView(value);try{localStorage.setItem('portfolio-work-view',value)}catch{}}
  function track(e:React.PointerEvent<HTMLAnchorElement>){if(e.pointerType!=='mouse'||matchMedia('(prefers-reduced-motion: reduce)').matches||document.documentElement.dataset.motionPaused==='true')return;const r=e.currentTarget.getBoundingClientRect();e.currentTarget.style.setProperty('--hover-x',`${Math.max(140,Math.min(r.width-270,e.clientX-r.left-140))}px`);e.currentTarget.style.setProperty('--tilt',`${((e.clientX-r.left)/r.width-.5)*5}deg`)}
  return <div id="top" className="work-index motion-case"><a className="skip-link" href="#work-main">Skip to projects</a><Header content={content}/><main id="work-main" className="archive-shell"><div className="archive-heading"><span className="studio-kicker">THE WORK / {new Date().getFullYear()}</span><h1>Ideas into<br/><span>experiences.</span><sup>({String(tabs[0].count).padStart(2,'0')})</sup></h1><div className="archive-description"><span>SELECTED PROJECTS</span><p>Interfaces with purpose. A collection of digital experiences and the decisions that shaped them.</p></div></div>

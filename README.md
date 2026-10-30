@@ -1,58 +1,42 @@
 # Md. Nasim Taif — UI/UX Design Portfolio
 
-The personal portfolio of **Md. Nasim Taif**, a Google-certified UI/UX designer and
-BSc in Computer Science & Engineering graduate based in Dhaka, Bangladesh.
-
-The site presents Nasim's design work, design process, services, professional
+The personal portfolio of **Md. Nasim Taif**, a Google-certified UI/UX designer
+and BSc in Computer Science & Engineering graduate based in Dhaka, Bangladesh.
+The website presents Nasim's design work, design process, services, professional
 background, and contact information in a responsive editorial-style experience.
-It includes selected case studies for Nishchinto, TurfGo, and RENTACA, with links
-to the complete project presentations on Behance.
 
-This is a full-stack portfolio site rather than a static landing page. Published
-content is stored in Cloudflare D1, uploaded images are stored in Cloudflare R2,
-and the owner can update the portfolio through a protected editor without
-redeploying the application.
+The existing visual design and portfolio features are preserved, while the
+runtime is now standard Next.js so the same project can be deployed to either
+Vercel or Render.
 
 ## Features
 
-- Responsive portfolio homepage with animated page transitions and motion
-  preferences that respect `prefers-reduced-motion`.
-- About page describing Nasim's background, education, and design philosophy.
-- Selected work gallery with filtering/navigation and individual project routes.
-- Project case-study pages with:
-  - project overview, role, platform, tools, and tags;
-  - cover/detail imagery;
-  - design-focus sections;
-  - links to the complete Behance case study;
-  - next-project navigation.
-- Contact page with configurable contact details, availability, and social links.
-- Protected `/admin` editor for:
-  - profile and biography content;
-  - projects and publication status;
-  - project ordering, descriptions, tags, and design-focus sections;
-  - services and design-process content;
-  - contact information and social profiles;
-  - portrait, project-cover, and project-detail uploads.
-- Draft and publish workflow with revision checks to prevent overwriting edits
-  made in another browser session.
-- JSON content export/import support for backups.
-- Zod validation for editable content and upload input.
-- Cloudflare Worker runtime with D1 database and R2 object storage bindings.
-- Local connector preview support for development.
+- Responsive portfolio homepage with animated page transitions.
+- About, contact, selected-work, and project detail pages.
+- Nishchinto, TurfGo, and RENTACA project case studies with Behance links.
+- Protected `/admin` visual editor for profile, projects, services, process,
+  contact details, and social links.
+- Project ordering, publication toggles, cover/detail image fields, tags, and
+  design-focus sections.
+- Draft and publish workflow with revision conflict protection.
+- JSON content export/import backups.
+- Image uploads with JPG, PNG, WebP, and GIF validation.
+- Google OAuth authentication through Auth.js.
+- PostgreSQL content persistence through Drizzle-compatible tables.
+- S3-compatible image storage, usable with Cloudinary S3, AWS S3, DigitalOcean
+  Spaces, Supabase Storage, or another compatible provider.
+- No Cloudflare Worker, D1, R2, or Vinext runtime dependency.
 
-## Tech stack
+## Stack
 
-- [React](https://react.dev/) 19
-- [Next.js](https://nextjs.org/) 16 application conventions
-- [Vinext](https://github.com/cloudflare/vinext) and [Vite](https://vite.dev/)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Tailwind CSS](https://tailwindcss.com/) 4 and custom CSS
-- [Cloudflare Workers](https://workers.cloudflare.com/)
-- [Cloudflare D1](https://developers.cloudflare.com/d1/) for portfolio content
-- [Cloudflare R2](https://developers.cloudflare.com/r2/) for uploaded images
-- [Drizzle ORM](https://orm.drizzle.team/) and Drizzle Kit for database schema/migrations
-- [Zod](https://zod.dev/) for runtime validation
-- [Lucide](https://lucide.dev/) for interface icons
+- Next.js 16 and React 19
+- TypeScript
+- Existing CSS and UI components
+- Auth.js with Google OAuth
+- PostgreSQL and `postgres`
+- Drizzle ORM/Kit schema and migration tooling
+- AWS SDK S3 client for portable object storage
+- Vercel or Render deployment
 
 ## Project structure
 
@@ -60,38 +44,37 @@ redeploying the application.
 .
 ├── app/
 │   ├── admin/                 Protected visual editor
-│   ├── api/                   Content and image-upload API routes
+│   ├── api/auth/              Auth.js route handlers
+│   ├── api/content/           Draft/publish content API
+│   ├── api/media/             S3-backed image delivery
+│   ├── api/upload/            Authenticated image uploads
 │   ├── about/                 About page
 │   ├── contact/               Contact page
-│   ├── work/                  Work gallery and project detail pages
-│   ├── content.ts             Content schema and default portfolio content
+│   ├── work/                  Work gallery and project pages
+│   ├── content.ts             Zod content schema and default content
 │   ├── portfolio.tsx          Shared portfolio UI
-│   ├── profile-page.tsx       About/contact presentation
-│   ├── store.ts               D1 persistence and owner authorization
-│   └── *.css                  Global, motion, studio, and process styles
-├── components/ui/             Reusable interface components
+│   └── store.ts               PostgreSQL persistence and owner checks
 ├── db/
-│   ├── schema.ts              D1/Drizzle table definitions
-│   └── index.ts               Database binding access
-├── drizzle/                   Generated SQL migrations and metadata
-├── public/images/              Bundled portraits, project images, and icons
-├── scripts/                   Installation, environment, and preview helpers
-├── worker/index.ts            Cloudflare Worker entry point
-├── tests/                     Local content API checks
-├── vite.config.ts             Vinext, Vite, and Cloudflare configuration
-└── .openai/hosting.json       D1 and R2 binding declarations
+│   ├── index.ts               PostgreSQL client
+│   ├── migrate.ts             Migration runner
+│   └── schema.ts              PostgreSQL/Drizzle table definitions
+├── drizzle/                   PostgreSQL migration SQL
+├── lib/storage.ts             S3-compatible storage adapter
+├── public/images/             Bundled portraits, project images, and icons
+├── auth.ts                    Auth.js Google configuration
+├── next.config.ts             Next.js configuration
+└── package.json               Portable development and deployment scripts
 ```
 
 ## Requirements
 
 - Node.js `>=22.13.0`
 - npm
-- Git
+- A PostgreSQL database
+- A Google OAuth application
+- An S3-compatible bucket for uploaded images
 
-The project is designed to run on macOS, Linux, and Windows. Cloudflare
-deployment also requires access to the relevant Cloudflare account and bindings.
-
-## Getting started
+## Local development
 
 Install dependencies:
 
@@ -99,98 +82,124 @@ Install dependencies:
 npm ci
 ```
 
-Start the local development server:
+Create an ignored `.env.local` file:
+
+```dotenv
+DATABASE_URL=postgres://user:password@host:5432/database
+AUTH_SECRET=replace-with-a-long-random-secret
+AUTH_URL=http://localhost:3000
+AUTH_TRUST_HOST=true
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+PORTFOLIO_OWNER_EMAIL=your-google-account@example.com
+
+S3_ENDPOINT=https://your-object-storage-endpoint
+S3_REGION=auto
+S3_BUCKET=your-bucket-name
+S3_ACCESS_KEY_ID=your-access-key
+S3_SECRET_ACCESS_KEY=your-secret-key
+```
+
+Apply the database schema:
+
+```bash
+npm run db:migrate
+```
+
+Start the development server:
 
 ```bash
 npm run dev
 ```
 
-The development server uses the local Vinext/Vite and Cloudflare preview setup.
-Open the URL printed in the terminal. When using the local development
-authentication flow, add the following value to an ignored `.dev.vars` file:
+Open `http://localhost:3000`, then visit `/admin` and sign in with the Google
+account matching `PORTFOLIO_OWNER_EMAIL`.
 
-```dotenv
-PORTFOLIO_OWNER_EMAIL=seedy@sites.test
-```
-
-Do not commit `.dev.vars` or any other file containing credentials or private
-environment values.
-
-To open the editor locally, visit `/admin` and sign in with the configured local
-development identity. In a hosted deployment, editor access is restricted to
-the ChatGPT account that owns the site.
-
-## Available commands
+## Commands
 
 | Command | Description |
 | --- | --- |
-| `npm ci` | Install the exact dependency versions from `package-lock.json`. |
-| `npm run dev` | Start the local development preview with hot reload. |
-| `npm run build` | Build the application and Worker deployment output. |
-| `npm start` | Run the built Worker locally through Wrangler. |
-| `npm run lint` | Run the ESLint configuration across the source tree. |
-| `npm run db:generate` | Generate a Drizzle migration from schema changes. |
-| `node node_modules/typescript/bin/tsc --noEmit` | Run the TypeScript compiler without emitting files. |
-| `node tests/content-api.mjs` | Exercise local content API authorization, persistence, validation, uploads, and 404 behavior. |
+| `npm ci` | Install the exact locked dependencies. |
+| `npm run dev` | Start the Next.js development server. |
+| `npm run build` | Create the production Next.js build. |
+| `npm start` | Run the production build locally. |
+| `npm run lint` | Run ESLint. |
+| `npm run db:generate` | Generate a Drizzle PostgreSQL migration. |
+| `npm run db:migrate` | Apply the checked-in PostgreSQL migration. |
+| `npx tsc --noEmit` | Check TypeScript without emitting files. |
 
-Run the API test only while the local preview is running. It targets the local
-server, restores the published content after the test, and does not access a
-hosted deployment.
+## Deploying to Vercel
+
+1. Push this repository to GitHub.
+2. In Vercel, choose **Add New → Project** and import the repository.
+3. Use Node.js `22.x`.
+4. Use the default Next.js framework settings:
+   - Install command: `npm ci`
+   - Build command: `npm run build`
+   - Output directory: leave blank
+5. Add all variables from `.env.local` to Vercel Project Settings.
+6. Add the production domain to the Google OAuth redirect URIs:
+   `https://your-domain.com/api/auth/callback/google`.
+7. Deploy.
+8. Run `npm run db:migrate` against the production `DATABASE_URL` before using
+   the editor.
+
+## Deploying to Render
+
+1. Create a **Web Service** in Render and connect the GitHub repository.
+2. Select Node.js and use Node.js `22`.
+3. Configure:
+   - Build command: `npm ci && npm run build`
+   - Start command: `npm start`
+4. Add the same environment variables used locally.
+5. Add the Render domain to the Google OAuth redirect URIs:
+   `https://your-service.onrender.com/api/auth/callback/google`.
+6. Deploy.
+7. Run `npm run db:migrate` against the production database before using the
+   editor.
+
+The application code and environment variables are the same on Vercel and
+Render. Only the hosting dashboard and public URL differ.
 
 ## Content management
 
-The editor at `/admin` is intentionally separate from visitor access:
+The `/admin` editor is restricted to the Google account whose email matches
+`PORTFOLIO_OWNER_EMAIL`. The editor supports:
 
-1. Sign in with the ChatGPT account that owns the portfolio.
-2. Edit profile, projects, services, process steps, contact details, or links.
-3. Save a draft to persist changes without changing the public portfolio.
-4. Publish when the content is ready.
-5. Use export/import to create or restore a JSON content backup.
+1. Editing profile, projects, services, process, contact, and social content.
+2. Saving a draft without changing the public website.
+3. Publishing the current draft.
+4. Exporting and importing JSON backups.
+5. Uploading images to S3-compatible storage.
 
-Content is validated against the schemas in [`app/content.ts`](./app/content.ts).
-The owner identity is bootstrapped from `PORTFOLIO_OWNER_EMAIL` for the first
-authorized save and then stored as a stable site-specific identity in D1.
-Uploaded images are kept in R2; content backups contain image references rather
-than the binary files.
+The PostgreSQL tables are `portfolio_content` and `portfolio_owner`. The
+revision check rejects stale saves so one editor session cannot silently
+overwrite a newer session.
 
-If another editor session saves first, the revision check returns a conflict
-instead of silently overwriting the newer content. Export the local work and
-reload the editor before trying again.
+## Storage configuration
 
-## Data and Cloudflare bindings
+The image adapter accepts any S3-compatible provider. Set:
 
-The hosting configuration declares these bindings in
-[`.openai/hosting.json`](./.openai/hosting.json):
+- `S3_ENDPOINT`
+- `S3_REGION`
+- `S3_BUCKET`
+- `S3_ACCESS_KEY_ID`
+- `S3_SECRET_ACCESS_KEY`
 
-- `DB` — Cloudflare D1 database used by `portfolio_content` and `portfolio_owner`.
-- `BUCKET` — Cloudflare R2 bucket used for uploaded portfolio images.
+The application stores image objects under generated UUID filenames and serves
+them through `/api/media/[key]`. Uploaded files remain private to the storage
+provider and are delivered through the application route.
 
-The initial database migration is
-[`drizzle/0000_gorgeous_khan.sql`](./drizzle/0000_gorgeous_khan.sql). The Worker
-entry point is [`worker/index.ts`](./worker/index.ts), which passes requests to
-the Vinext fetch handler and preserves the request-scoped connector binding.
+## Security notes
 
-For hosted deployments, configure the D1/R2 bindings and the server-side
-`PORTFOLIO_OWNER_EMAIL` value through the hosting environment. Never place
-owner credentials, production secrets, or private environment values in client
-code or tracked files.
-
-## Design content
-
-The default published portfolio includes:
-
-- **Nishchinto** — an e-commerce app and website focused on clearer pricing,
-  delivery, warranty, and return information for online shoppers in Bangladesh.
-- **TurfGo** — a mobile experience for smart turf booking and management.
-- **RENTACA** — a collaborative car-rental website design and UI/UX case study.
-
-The complete presentations remain linked from each project page and point to
-Nasim's original Behance work. Portfolio imagery and project descriptions are
-maintained as editable content so the site can evolve without changing the
-presentation code.
+- Keep `.env.local` and production secrets out of Git.
+- Use a long random `AUTH_SECRET`.
+- Restrict the Google OAuth application to the intended owner account.
+- Keep `PORTFOLIO_OWNER_EMAIL` server-side.
+- Use separate PostgreSQL databases/buckets for development and production.
 
 ## License and attribution
 
-This repository is a private portfolio project. The portfolio content, personal
-information, photographs, project imagery, and linked case-study materials
-belong to their respective owner/creators. Do not reuse them without permission.
+This is a private portfolio project. Personal information, photographs, project
+imagery, and linked case-study materials belong to their respective
+owner/creators. Do not reuse them without permission.
