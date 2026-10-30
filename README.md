@@ -1,133 +1,196 @@
-# vinext-starter
+# Md. Nasim Taif — UI/UX Design Portfolio
 
-A clean full-stack starter running on [vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and Drizzle support.
+The personal portfolio of **Md. Nasim Taif**, a Google-certified UI/UX designer and
+BSc in Computer Science & Engineering graduate based in Dhaka, Bangladesh.
 
-## Prerequisites
+The site presents Nasim's design work, design process, services, professional
+background, and contact information in a responsive editorial-style experience.
+It includes selected case studies for Nishchinto, TurfGo, and RENTACA, with links
+to the complete project presentations on Behance.
+
+This is a full-stack portfolio site rather than a static landing page. Published
+content is stored in Cloudflare D1, uploaded images are stored in Cloudflare R2,
+and the owner can update the portfolio through a protected editor without
+redeploying the application.
+
+## Features
+
+- Responsive portfolio homepage with animated page transitions and motion
+  preferences that respect `prefers-reduced-motion`.
+- About page describing Nasim's background, education, and design philosophy.
+- Selected work gallery with filtering/navigation and individual project routes.
+- Project case-study pages with:
+  - project overview, role, platform, tools, and tags;
+  - cover/detail imagery;
+  - design-focus sections;
+  - links to the complete Behance case study;
+  - next-project navigation.
+- Contact page with configurable contact details, availability, and social links.
+- Protected `/admin` editor for:
+  - profile and biography content;
+  - projects and publication status;
+  - project ordering, descriptions, tags, and design-focus sections;
+  - services and design-process content;
+  - contact information and social profiles;
+  - portrait, project-cover, and project-detail uploads.
+- Draft and publish workflow with revision checks to prevent overwriting edits
+  made in another browser session.
+- JSON content export/import support for backups.
+- Zod validation for editable content and upload input.
+- Cloudflare Worker runtime with D1 database and R2 object storage bindings.
+- Local connector preview support for development.
+
+## Tech stack
+
+- [React](https://react.dev/) 19
+- [Next.js](https://nextjs.org/) 16 application conventions
+- [Vinext](https://github.com/cloudflare/vinext) and [Vite](https://vite.dev/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Tailwind CSS](https://tailwindcss.com/) 4 and custom CSS
+- [Cloudflare Workers](https://workers.cloudflare.com/)
+- [Cloudflare D1](https://developers.cloudflare.com/d1/) for portfolio content
+- [Cloudflare R2](https://developers.cloudflare.com/r2/) for uploaded images
+- [Drizzle ORM](https://orm.drizzle.team/) and Drizzle Kit for database schema/migrations
+- [Zod](https://zod.dev/) for runtime validation
+- [Lucide](https://lucide.dev/) for interface icons
+
+## Project structure
+
+```text
+.
+├── app/
+│   ├── admin/                 Protected visual editor
+│   ├── api/                   Content and image-upload API routes
+│   ├── about/                 About page
+│   ├── contact/               Contact page
+│   ├── work/                  Work gallery and project detail pages
+│   ├── content.ts             Content schema and default portfolio content
+│   ├── portfolio.tsx          Shared portfolio UI
+│   ├── profile-page.tsx       About/contact presentation
+│   ├── store.ts               D1 persistence and owner authorization
+│   └── *.css                  Global, motion, studio, and process styles
+├── components/ui/             Reusable interface components
+├── db/
+│   ├── schema.ts              D1/Drizzle table definitions
+│   └── index.ts               Database binding access
+├── drizzle/                   Generated SQL migrations and metadata
+├── public/images/              Bundled portraits, project images, and icons
+├── scripts/                   Installation, environment, and preview helpers
+├── worker/index.ts            Cloudflare Worker entry point
+├── tests/                     Local content API checks
+├── vite.config.ts             Vinext, Vite, and Cloudflare configuration
+└── .openai/hosting.json       D1 and R2 binding declarations
+```
+
+## Requirements
 
 - Node.js `>=22.13.0`
-- Portable: Windows, macOS, or Linux; no Bash required
-- Managed Linux: managed Linux runtime with Bash, `flock`, `curl`, `sha256sum`, and GNU `timeout`
-- Git and `tar` (including Windows `tar.exe`) are required for publishing; portable publication does not require Bash
+- npm
+- Git
 
-## Sites Lifecycle
+The project is designed to run on macOS, Linux, and Windows. Cloudflare
+deployment also requires access to the relevant Cloudflare account and bindings.
 
-The Sites initializer copies the shared starter and selects managed-linux only when `SITES_MANAGED_LINUX_CONTAINER=1`; otherwise it selects portable. It saves the selection only in ignored `.sites-runtime/execution-profile.json`. Both profiles copy/configure first, then use the plugin's separate `install-dependencies.mjs` step to measure installation independently. Edit source under `app/` and follow the Sites skill for installation, preview, builds, and publishing.
+## Getting started
 
-Run `node <plugin-root>/scripts/configure-execution-profile.mjs` only when the profile is unknown for the current checkout and environment. Profile changes do not alter tracked source or require reinstalling otherwise-valid dependencies; restart an existing preview to use the new selection. Do not commit or upload `.sites-runtime/`.
+Install dependencies:
 
-This starter does not use `wrangler.jsonc`.
-
-Publish archives outside the source checkout or under its ignored `outputs/` directory. Local `.env*`, `.dev.vars*`, TypeScript build state, and tool runtime directories are ignored; keep the hosting manifest, migrations, and authored scripts in source control.
-
-`install:ci` runs `npm ci` once against the shared lockfile, disables parent-workspace discovery, and includes required dev/optional dependencies despite production/omit settings. Sharp defaults to prebuilt binaries unless explicitly configured otherwise. Do not overlap installers.
-
-- **Portable:** Preserve host HOME, npm cache, registry, proxy, temporary paths, retry/concurrency settings, and lifecycle-script policy. Use `--prefer-offline --no-audit --no-fund`.
-- **Managed Linux:** Use the existing project-local HOME/cache/tmp setup and Linux install lock, tarball preflight, and timeout. Restore the image-seeded npm cache only when its lockfile hash matches; retain network fallback. Builds keep their existing timeout. These helpers are not invoked by the portable profile.
-
-`scripts/sites-env.mjs` preserves the caller's HOME, npm cache, proxy, XDG, and temporary-directory configuration while defaulting Wrangler and Miniflare state to the checkout. If npm reports an unwritable cache, select a writable path with `npm_config_cache` for that install. The `dev` and `start` scripts also keep Wrangler logs inside the checkout. Generated `.sites-runtime/` and `.wrangler/` directories are disposable and ignored by Git.
-
-On portable, `npm run dev` uses `vinext dev` with HMR, starting at port 5173. Vinext records the running server in ignored `.vinext/` state, rejects an ordinary duplicate launch, and recovers stale state after a stopped process; exactly simultaneous starts can race. Pass `--port <port>` or `--hostname <host>` after `npm run dev --` when needed; keep portable previews on loopback.
-
-For managed Linux browser QA, follow the Sites skill's managed preview reference. The daemon runs the project's Vite dev script with `--host 0.0.0.0 --port 4173 --strictPort`; use the CLI's returned URL. The ignored local profile survives the daemon's cleared environment.
-
-The portable profile simulates ChatGPT sign-in only for loopback development requests. Visit `/signin-with-chatgpt?return_to=/` to sign in as `local_seedy` (`seedy@sites.test`, display name `Seedy`) and `/signout-with-chatgpt?return_to=/` to sign out. The development cookie preserves that identity across server restarts. Mock auth is disabled in the managed-linux profile and is not included in production builds; hosted authentication remains dispatch-owned.
-
-The Worker uses `vinext/server/fetch-handler`, including Vinext's config-aware image handling. After building, `npm start` runs that Worker locally through Wrangler on `127.0.0.1`, sharing `.wrangler/state` with dev preview and local D1 migrations; it does not deploy the site or simulate sign-in. Use the URL printed by the server. Pass `npm start -- --port <port>` to select a different built-preview port.
-
-Local previews use Miniflare's placeholder `Request.cf` metadata without a network lookup. Set `CLOUDFLARE_CF_FETCH_ENABLED=true` to opt into fetching preview metadata; this setting does not change hosted request metadata.
-
-Local tool usage metrics are disabled by default. Set `WRANGLER_SEND_METRICS=true` to opt in.
-
-## Included Shape
-
-- edit site code under `app/`
-- `app/chatgpt-auth.ts` provides optional dispatch-owned ChatGPT sign-in helpers
-- `.openai/hosting.json` declares optional Sites D1 and R2 bindings
-- `vite.config.ts` simulates declared bindings for local development
-- `worker/index.ts` is the production Worker entrypoint and preserves request-scoped connector bindings
-- `scripts/vite/` contains the maintained Vite integrations and the vendored Sites plugin license
-- `scripts/connector-preview/` contains the local connector preview Worker and session helpers
-- the remaining `scripts/` files select execution profiles and run installation, development, and builds; the plugin's helpers orchestrate the Sites lifecycle
-- `dist/` contains generated deployment output; `.vinext/`, `.wrangler/`, and `.sites-runtime/` contain ignored local tool state
-- `db/index.ts` reads the D1 binding from the Cloudflare Worker environment
-- `db/schema.ts` starts intentionally empty
-- `@cloudflare/workers-types` provides Worker types; `cloudflare-env.d.ts` declares optional `DB`/`BUCKET` bindings—update these declarations if binding names change
-- `examples/d1/` contains an optional D1 example surface
-- `drizzle.config.ts` supports local migration generation when needed
-
-## Workspace Auth Headers
-
-Signed-in visitors receive both `oai-authenticated-user-id` and `oai-authenticated-user-email`. Private Sites require every visitor to sign in; public Sites may also have anonymous visitors, for whom neither header is present.
-
-The user ID is stable for the same user on the same Site and different across Sites. Use it as the durable user key; use email and name for display or contact purposes.
-
-SIWC-authenticated workspace sites may also receive `oai-authenticated-user-full-name` when the user's SIWC profile has a non-empty `name` claim. The full-name value is percent-encoded UTF-8 and is accompanied by `oai-authenticated-user-full-name-encoding: percent-encoded-utf-8`.
-
-Treat the full name as optional and fall back to email when it is absent:
-
-```tsx
-import { headers } from "next/headers";
-
-export default async function Home() {
-  const requestHeaders = await headers();
-  const userId = requestHeaders.get("oai-authenticated-user-id");
-  const email = requestHeaders.get("oai-authenticated-user-email");
-  const encodedFullName = requestHeaders.get("oai-authenticated-user-full-name");
-  const fullName =
-    encodedFullName &&
-    requestHeaders.get("oai-authenticated-user-full-name-encoding") ===
-      "percent-encoded-utf-8"
-      ? decodeURIComponent(encodedFullName)
-      : null;
-
-  const displayName = fullName ?? email;
-  // ...
-}
+```bash
+npm ci
 ```
 
-## Optional Dispatch-Owned ChatGPT Sign-In
+Start the local development server:
 
-Import the ready-to-use helpers from `app/chatgpt-auth.ts` when the site needs optional or required ChatGPT sign-in:
-
-- Use `getChatGPTUser()` for optional signed-in UI.
-- Use the returned `userId` as the stable user key for user-owned records; do not use email as a durable identifier.
-- Use `requireChatGPTUser(returnTo)` for server-rendered pages that should send anonymous visitors through Sign in with ChatGPT.
-- In a Server Component, start sign-in with `<a href={chatGPTSignInPath(returnTo)} target="_top">`. The auth helper module is server-only; do not import it into a Client Component.
-- Do not use `fetch`, XHR, a client-side router, or a framework link that can prefetch the sign-in route. SIWC must start as a top-level navigation.
-- Never request the AuthAPI authorization endpoint directly. The dispatch-owned `/signin-with-chatgpt` route must start the SIWC flow.
-- Use `chatGPTSignOutPath(returnTo)` for browser sign-out links or actions.
-- Pass a same-origin relative `returnTo` path for the destination after sign-in or sign-out. The helper validates and safely encodes it.
-- Mark protected pages with `export const dynamic = "force-dynamic"` because they depend on per-request identity headers.
-
-Dispatch owns `/signin-with-chatgpt`, `/signout-with-chatgpt`, `/callback`, the OAuth cookies, and identity header injection. Do not implement app routes for those reserved paths. Routes that do not import and call the helper remain anonymous-compatible.
-
-SIWC establishes identity only; it does not prove workspace membership. Use the Sites hosting platform's access policy controls for workspace-wide restrictions, or enforce explicit server-side membership or allowlist checks.
-
-Use SIWC for account pages, user-specific dashboards, saved records, and write actions tied to the current ChatGPT user. Leave public content anonymous.
-
-## Local D1 migrations
-
-For a D1-backed local preview, generate SQL with `npm run db:generate`. Build once through the Sites skill's build entrypoint (or `npm run build` for standalone use) to generate `dist/server/wrangler.json`, rebuilding if bindings change. From the project root, apply each pending migration in order:
-
-```sh
-node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0000_example.sql
+```bash
+npm run dev
 ```
 
-Replace the filename with the pending migration and `DB` with your D1 binding name if different. Use `.wrangler/state`, not `.wrangler/state/v3`; Wrangler adds the versioned directories. Do not replay migrations already applied locally. This updates only the preview database; publishing applies production migrations separately.
+The development server uses the local Vinext/Vite and Cloudflare preview setup.
+Open the URL printed in the terminal. When using the local development
+authentication flow, add the following value to an ignored `.dev.vars` file:
 
-## Diagnostic Commands
+```dotenv
+PORTFOLIO_OWNER_EMAIL=seedy@sites.test
+```
 
-- `npm run install:ci`: perform the one locked dependency install
-- `npm run dev`: start the Vite/Vinext development server
-- `npm run build`: build the deployable Sites artifact
-- `npm run start`: preview the built Worker locally with D1/R2 support
-- `npm run db:generate`: generate Drizzle migrations after schema changes
+Do not commit `.dev.vars` or any other file containing credentials or private
+environment values.
 
-When using the Sites plugin, follow its skill instructions for installation, builds, and publishing. These npm commands remain available for standalone use.
+To open the editor locally, visit `/admin` and sign in with the configured local
+development identity. In a hosted deployment, editor access is restricted to
+the ChatGPT account that owns the site.
 
-The portable build runs Vinext directly without a host `timeout` command. The managed-linux build uses `scripts/build-verified.sh` and its existing `SITES_BUILD_TIMEOUT` setting.
+## Available commands
 
-## Learn More
+| Command | Description |
+| --- | --- |
+| `npm ci` | Install the exact dependency versions from `package-lock.json`. |
+| `npm run dev` | Start the local development preview with hot reload. |
+| `npm run build` | Build the application and Worker deployment output. |
+| `npm start` | Run the built Worker locally through Wrangler. |
+| `npm run lint` | Run the ESLint configuration across the source tree. |
+| `npm run db:generate` | Generate a Drizzle migration from schema changes. |
+| `node node_modules/typescript/bin/tsc --noEmit` | Run the TypeScript compiler without emitting files. |
+| `node tests/content-api.mjs` | Exercise local content API authorization, persistence, validation, uploads, and 404 behavior. |
 
-- [vinext Documentation](https://github.com/cloudflare/vinext)
-- [Drizzle D1 Guide](https://orm.drizzle.team/docs/get-started/d1-new)
+Run the API test only while the local preview is running. It targets the local
+server, restores the published content after the test, and does not access a
+hosted deployment.
+
+## Content management
+
+The editor at `/admin` is intentionally separate from visitor access:
+
+1. Sign in with the ChatGPT account that owns the portfolio.
+2. Edit profile, projects, services, process steps, contact details, or links.
+3. Save a draft to persist changes without changing the public portfolio.
+4. Publish when the content is ready.
+5. Use export/import to create or restore a JSON content backup.
+
+Content is validated against the schemas in [`app/content.ts`](./app/content.ts).
+The owner identity is bootstrapped from `PORTFOLIO_OWNER_EMAIL` for the first
+authorized save and then stored as a stable site-specific identity in D1.
+Uploaded images are kept in R2; content backups contain image references rather
+than the binary files.
+
+If another editor session saves first, the revision check returns a conflict
+instead of silently overwriting the newer content. Export the local work and
+reload the editor before trying again.
+
+## Data and Cloudflare bindings
+
+The hosting configuration declares these bindings in
+[`.openai/hosting.json`](./.openai/hosting.json):
+
+- `DB` — Cloudflare D1 database used by `portfolio_content` and `portfolio_owner`.
+- `BUCKET` — Cloudflare R2 bucket used for uploaded portfolio images.
+
+The initial database migration is
+[`drizzle/0000_gorgeous_khan.sql`](./drizzle/0000_gorgeous_khan.sql). The Worker
+entry point is [`worker/index.ts`](./worker/index.ts), which passes requests to
+the Vinext fetch handler and preserves the request-scoped connector binding.
+
+For hosted deployments, configure the D1/R2 bindings and the server-side
+`PORTFOLIO_OWNER_EMAIL` value through the hosting environment. Never place
+owner credentials, production secrets, or private environment values in client
+code or tracked files.
+
+## Design content
+
+The default published portfolio includes:
+
+- **Nishchinto** — an e-commerce app and website focused on clearer pricing,
+  delivery, warranty, and return information for online shoppers in Bangladesh.
+- **TurfGo** — a mobile experience for smart turf booking and management.
+- **RENTACA** — a collaborative car-rental website design and UI/UX case study.
+
+The complete presentations remain linked from each project page and point to
+Nasim's original Behance work. Portfolio imagery and project descriptions are
+maintained as editable content so the site can evolve without changing the
+presentation code.
+
+## License and attribution
+
+This repository is a private portfolio project. The portfolio content, personal
+information, photographs, project imagery, and linked case-study materials
+belong to their respective owner/creators. Do not reuse them without permission.
