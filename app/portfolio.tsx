@@ -13,11 +13,6 @@ export default function Portfolio({content,preview=false}:{content:Content;previ
  const [motionPaused,setMotionPaused]=useState(false);
  useEffect(()=>{setMotionPaused(document.documentElement.dataset.motionPaused==="true")},[]);
  function toggleMotion(){const next=!motionPaused;setMotionPaused(next);document.documentElement.dataset.motionPaused=String(next);try{sessionStorage.setItem("portfolio-motion-paused",String(next))}catch{}resetHero()}
- function moveHero(e:React.PointerEvent<HTMLElement>){
-  if(e.pointerType!=="mouse"||motionPaused||window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;
-  const r=e.currentTarget.getBoundingClientRect(), x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;
-  e.currentTarget.style.setProperty("--hero-x",String(x));e.currentTarget.style.setProperty("--hero-y",String(y));
- }
  function resetHero(){hero.current?.style.setProperty("--hero-x","0");hero.current?.style.setProperty("--hero-y","0")}
  function movePreview(e:React.PointerEvent<HTMLAnchorElement>){
   if(e.pointerType!=="mouse"||motionPaused||window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;
@@ -48,7 +43,7 @@ export default function Portfolio({content,preview=false}:{content:Content;previ
  {open&&!scrolled&&<nav id="motion-navigation" className="motion-drawer" aria-label="Mobile navigation">{["Work","About","Process","Contact"].map(x=><a key={x} href={x==="Process"?"/#process":`/${x.toLowerCase()}`} onClick={()=>setOpen(false)}>{x}<ArrowUpRight/></a>)}</nav>}
  {scrolled&&<div className="scroll-navigation"><button aria-label={open?"Close navigation":"Open navigation"} aria-expanded={open} aria-controls="scroll-nav-links" onClick={()=>setOpen(!open)}>{open?<X/>:<Menu/>}</button>{open&&<nav id="scroll-nav-links" aria-label="Scroll navigation">{["Home","Work","About","Contact"].map(label=><a key={label} href={label==="Home"?"/":`/${label.toLowerCase()}`} onClick={()=>setOpen(false)}>{label}<ArrowUpRight size={18}/></a>)}</nav>}</div>}
  <main id="main">
- <section ref={hero} className="studio-hero" onPointerMove={moveHero} onPointerLeave={resetHero}>
+ <section ref={hero} className="studio-hero">
  <div className="studio-copy"><div className="studio-kicker"><span className="studio-status"/> {p.availability}</div><h1>{p.headline}</h1><p className="studio-subhead">{p.headlineAccent}</p><p className="studio-description">{p.intro}</p><a className="studio-cta" href="/work" onPointerMove={magnet} onPointerLeave={e=>e.currentTarget.style.translate="0 0"}>Explore selected work <ArrowUpRight size={23}/></a><div className="studio-bottom"><span><CertificationLink title={p.certification}/></span><span>{p.location}</span></div></div>
  <div className="studio-visual"><span className="studio-orbit" aria-hidden="true">✳</span><span className="studio-vertical">INDEPENDENT DESIGNER — OPEN TO COLLABORATE</span><div className="studio-photo"><img src={portrait||"/images/nasim-hero.png"} alt={p.name} fetchPriority="high"/></div><a className="studio-id" href="/about" aria-label="About MD. NASIM TAIF"><span>HELLO, I’M</span><strong>MD. NASIM TAIF</strong><span>{p.title} <ArrowUpRight size={16}/></span></a><button className="studio-motion" aria-pressed={motionPaused} onClick={toggleMotion}>{motionPaused?"Play motion ↗":"Pause motion Ⅱ"}</button></div>
  </section>
