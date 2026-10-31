@@ -1,3 +1,4 @@
+import { isSameOrigin } from "../../../lib/request-origin";
 import { contentSchema, defaultContent } from "../../content";
 import { database, loadState, ownerIdentity, noStore } from "../../store";
 
@@ -7,6 +8,7 @@ export async function GET() {
 }
 
 async function save(request: Request, publish: boolean) {
+  if (!isSameOrigin(request)) return Response.json({ error: "Same-origin request required." }, { status: 403 });
   const owner = await ownerIdentity();
   if (!owner) return Response.json({ error: "Owner sign-in required." }, { status: 403 });
   const raw = await request.text();

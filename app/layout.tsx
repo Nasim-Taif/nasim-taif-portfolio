@@ -7,8 +7,8 @@ import "./design-process.css";
 import PageTransitions from "./page-transitions";
 
 export const metadata: Metadata = {
-  title: "Md. Nasim Taif — UI/UX Designer",
-  description: "Thoughtful design. Meaningful experiences. Explore the work of Google-certified UI/UX designer Md. Nasim Taif.",
+  title: "Md. Nasim Taif — UX Engineer & Product Strategist",
+  description: "Thoughtful products. Meaningful experiences. Explore the work of UX Engineer and Product Strategist Md. Nasim Taif.",
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",

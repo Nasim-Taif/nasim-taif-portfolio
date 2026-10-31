@@ -1,6 +1,6 @@
-# Md. Nasim Taif — UI/UX Design Portfolio
+# Md. Nasim Taif — UX Engineer & Product Strategist
 
-The personal portfolio of **Md. Nasim Taif**, a Google-certified UI/UX designer
+The personal portfolio of **Md. Nasim Taif**, a UX Engineer and Product Strategist
 and BSc in Computer Science & Engineering graduate based in Dhaka, Bangladesh.
 The website presents Nasim's design work, design process, services, professional
 background, and contact information in a responsive editorial-style experience.
@@ -13,7 +13,7 @@ Vercel or Render.
 
 - Responsive portfolio homepage with animated page transitions.
 - About, contact, selected-work, and project detail pages.
-- Nishchinto, TurfGo, and RENTACA project case studies with Behance links.
+- Nishchinto, Pachok, TurfGo, and RENTACA project case studies with Behance links.
 - Protected `/admin` visual editor for profile, projects, services, process,
   contact details, and social links.
 - Project ordering, publication toggles, cover/detail image fields, tags, and

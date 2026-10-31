@@ -1,7 +1,9 @@
+import { isSameOrigin } from "../../../lib/request-origin";
 import { ownerIdentity } from "../../store";
 import { uploadImage } from "../../../lib/storage";
 
 export async function POST(request: Request) {
+  if (!isSameOrigin(request)) return Response.json({ error: "Same-origin request required." }, { status: 403 });
   if (!(await ownerIdentity())) return Response.json({ error: "Owner sign-in required." }, { status: 403 });
   if (Number(request.headers.get("content-length") ?? 0) > 9 * 1024 * 1024) return Response.json({ error: "Images must be smaller than 8 MB." }, { status: 413 });
   const form = await request.formData();

@@ -1,12 +1,12 @@
-CREATE TABLE IF NOT EXISTS portfolio_content (
-  id TEXT PRIMARY KEY,
-  published TEXT NOT NULL,
-  draft TEXT,
-  revision INTEGER NOT NULL DEFAULT 0,
-  updated_at TEXT NOT NULL
+CREATE TABLE "portfolio_content" (
+	"id" text PRIMARY KEY NOT NULL,
+	"published" text NOT NULL,
+	"draft" text,
+	"revision" integer DEFAULT 0 NOT NULL,
+	"updated_at" text NOT NULL
 );
-
-CREATE TABLE IF NOT EXISTS portfolio_owner (
-  id TEXT PRIMARY KEY,
-  user_id TEXT NOT NULL
+--> statement-breakpoint
+CREATE TABLE "portfolio_owner" (
+	"id" text PRIMARY KEY NOT NULL,
+	"user_id" text NOT NULL
 );

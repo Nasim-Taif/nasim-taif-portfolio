@@ -10,7 +10,7 @@ function storage() {
   if (!endpoint || !accessKeyId || !secretAccessKey || !process.env.S3_BUCKET) {
     throw new Error("S3 storage is not configured.");
   }
-  client ??= new S3Client({ endpoint, region, credentials: { accessKeyId, secretAccessKey } });
+  client ??= new S3Client({ endpoint, region, forcePathStyle: process.env.S3_FORCE_PATH_STYLE === "true", credentials: { accessKeyId, secretAccessKey } });
   return client;
 }
 
